@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Link from "next/link"; // Jangan lupa import
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -19,9 +20,13 @@ export default function Navbar() {
             <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-pink-500 transition-colors">{item}</a>
           ))}
         </div>
+        <Link href="/login">
+
         <button className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:shadow-pink-500/50 transition-all transform hover:scale-105">
           Book Now
         </button>
+        </Link>
+
       </div>
     </nav>
   );
