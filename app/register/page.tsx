@@ -223,7 +223,7 @@ export default function RegisterPage() {
             whileHover={{ scale: 1.02, boxShadow: "0 10px 25px -5px rgba(236, 72, 153, 0.4)" }}
             whileTap={{ scale: 0.98 }}
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-pink-500 via-rose-400 to-orange-400 text-white font-bold py-4 rounded-2xl shadow-lg mt-4 flex items-center justify-center gap-2"
+            className="w-full bg-linear-to-r from-pink-500 via-rose-400 to-orange-400 text-white font-bold py-4 rounded-2xl shadow-lg mt-4 flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>

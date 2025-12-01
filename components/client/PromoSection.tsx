@@ -6,7 +6,7 @@ import { Sparkles } from "lucide-react";
 export default function PromoSection() {
   return (
     <section id="promo" className="py-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-yellow-400 opacity-90 transform -skew-y-3 scale-110"></div>
+      <div className="absolute inset-0 bg-linear-to-r from-pink-500 via-purple-500 to-yellow-400 opacity-90 transform -skew-y-3 scale-110"></div>
       <FloatingShape className="w-96 h-96 bg-white top-0 right-0 opacity-20" />
       <div className="container mx-auto px-6 relative z-10 text-center text-white">
         <motion.div initial={{ scale: 0.5, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} transition={{ type: "spring", bounce: 0.5 }}>

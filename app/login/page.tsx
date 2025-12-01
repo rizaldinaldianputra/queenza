@@ -67,7 +67,7 @@ export default function LoginPage() {
         
         {/* Header */}
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 mb-2">
+          <h2 className="text-3xl font-black text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-purple-600 mb-2">
             Welcome Back!
           </h2>
           <p className="text-slate-500 text-sm">
@@ -129,7 +129,7 @@ export default function LoginPage() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             disabled={isLoading}
-            className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 bg-[length:200%_auto] hover:bg-right transition-all duration-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-pink-500/30 flex items-center justify-center gap-2"
+            className="w-full bg-linear-to-r from-pink-500 via-purple-500 to-pink-500 bg-[length:200%_auto] hover:bg-right transition-all duration-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-pink-500/30 flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>

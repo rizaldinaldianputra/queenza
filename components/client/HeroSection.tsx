@@ -23,7 +23,7 @@ export default function HeroSection() {
         </motion.div>
 
         <motion.h1 initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }} className="text-6xl md:text-8xl font-black mb-6 leading-tight drop-shadow-xl">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-red-400 to-yellow-400 filter drop-shadow-lg">Wake Up</span>
+          <span className="bg-clip-text text-transparent bg-linear-to-r from-pink-500 via-red-400 to-yellow-400 filter drop-shadow-lg">Wake Up</span>
           <br />
           <span className="text-slate-800">Like This.</span>
         </motion.h1>

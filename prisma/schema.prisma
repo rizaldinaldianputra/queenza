@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Enum untuk status booking agar konsisten
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+// Enum untuk role user
+enum Role {
+  USER
+  ADMIN
+}
+
+// Table User (Member/Admin)
+model User {
+  id        String   @id @default(cuid()) // ID unik string panjang
+  name      String
+  email     String   @unique
+  password  String // Nanti di-hash
+  phone     String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+
+  bookings Booking[] // Relasi: Satu user punya banyak booking
+  reviews  Review[]
+}
+
+// Table Services (Layanan)
+model Service {
+  id       Int     @id @default(autoincrement())
+  name     String
+  category String // Eyelash, Nails, etc
+  price    Decimal // Pakai Decimal untuk uang
+  duration Int // Dalam menit
+  image    String?
+  isActive Boolean @default(true)
+
+  bookings Booking[]
+}
+
+// Table Booking (Transaksi)
+model Booking {
+  id         String        @id @default(cuid())
+  date       DateTime // Tanggal booking
+  time       String // Jam (misal "14:00")
+  status     BookingStatus @default(PENDING)
+  totalPrice Decimal
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  // Relasi ke User
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Relasi ke Service
+  serviceId Int
+  service   Service @relation(fields: [serviceId], references: [id])
+}
+
+// Table Review (Optional untuk nanti)
+model Review {
+  id      String @id @default(cuid())
+  rating  Int
+  comment String
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+}

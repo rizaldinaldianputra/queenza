@@ -22,7 +22,7 @@ export default function Navbar() {
         </div>
         <Link href="/login">
 
-        <button className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:shadow-pink-500/50 transition-all transform hover:scale-105">
+        <button className="bg-linear-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-full font-bold shadow-lg hover:shadow-pink-500/50 transition-all transform hover:scale-105">
           Book Now
         </button>
         </Link>
