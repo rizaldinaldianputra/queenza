@@ -4,8 +4,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation"; // 1. Import Router
 
 export default function LoginPage() {
+    const router = useRouter(); // 2. Panggil Router
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +20,8 @@ export default function LoginPage() {
     // Simulasi loading login
     setTimeout(() => {
       setIsLoading(false);
+            router.push("/dashboard"); 
+
       alert("Login berhasil (Simulasi)");
     }, 2000);
   };

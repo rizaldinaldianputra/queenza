@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   MapPin
 } from "lucide-react";
+import Link from "next/link";
 
 // --- Mock Data ---
 const SERVICES = [
@@ -31,9 +32,10 @@ export default function DashboardPage() {
   const [selectedService, setSelectedService] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<number>(0); // Index of next 7 days
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  
-  // Generate 5 hari kedepan
-  const dates = Array.from({ length: 5 }).map((_, i) => {
+  const [dates, setDates] = useState<any[]>([]);
+
+React.useEffect(() => {
+  const dts = Array.from({ length: 5 }).map((_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i);
     return {
@@ -42,6 +44,9 @@ export default function DashboardPage() {
       fullDate: d.toLocaleDateString("id-ID", { dateStyle: "full" })
     };
   });
+
+  setDates(dts);
+}, []);
 
   const handleBooking = () => {
     // Logika kirim ke API disini
@@ -67,9 +72,11 @@ export default function DashboardPage() {
             <p className="text-xs text-pink-500 font-semibold">Gold Member</p>
           </div>
         </div>
+        <Link  href="/">
         <button className="p-2 hover:bg-red-50 text-red-400 rounded-full transition-colors">
           <LogOut size={20} />
         </button>
+        </Link>
       </nav>
 
       <main className="container mx-auto px-4 md:px-6 py-8 max-w-5xl">
@@ -130,9 +137,11 @@ export default function DashboardPage() {
                     <p className="font-bold text-pink-700">Sabtu, 12 Okt</p>
                     <p className="text-sm text-slate-600">14:00 WIB • Retouch</p>
                 </div>
-                <button className="w-full text-xs text-slate-500 hover:text-pink-600 underline text-center">
-                    Lihat Riwayat Booking
-                </button>
+                <Link href="/dashboard/history" className="w-full block text-center mt-2">
+    <span className="text-xs text-slate-500 hover:text-pink-600 underline cursor-pointer">
+        Lihat Riwayat Booking
+    </span>
+</Link>
             </div>
           </div>
 
