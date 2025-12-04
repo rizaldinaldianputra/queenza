@@ -7,71 +7,304 @@ datasource db {
   provider = "postgresql"
 }
 
-// Enum untuk status booking agar konsisten
-enum BookingStatus {
-  PENDING
-  CONFIRMED
-  COMPLETED
-  CANCELLED
-}
-
-// Enum untuk role user
 enum Role {
   USER
   ADMIN
 }
 
-// Table User (Member/Admin)
-model User {
-  id        String   @id @default(cuid()) // ID unik string panjang
-  name      String
-  email     String   @unique
-  password  String // Nanti di-hash
-  phone     String?
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-
-  bookings Booking[] // Relasi: Satu user punya banyak booking
-  reviews  Review[]
+enum ServiceCategory {
+  EYELASH
+  NAILS
+  TREATMENT
 }
 
-// Table Services (Layanan)
-model Service {
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+  NOSHOW
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+}
+
+enum PaymentMethod {
+  MIDTRANS
+  CASH
+}
+
+enum BookingSource {
+  ONLINE
+  WALKIN
+}
+
+enum StationType {
+  LASH_BED
+  NAIL_CHAIR
+}
+
+enum SocialPlatform {
+  INSTAGRAM
+  TIKTOK
+  YOUTUBE
+  FACEBOOK
+  WHATSAPP
+}
+
+enum ContentPlatform {
+  YOUTUBE
+  TIKTOK
+}
+
+// ==============================
+// MODELS
+// ==============================
+
+model User {
   id       Int     @id @default(autoincrement())
   name     String
-  category String // Eyelash, Nails, etc
-  price    Decimal // Pakai Decimal untuk uang
-  duration Int // Dalam menit
+  email    String  @unique
+  password String?
+  phone    String?
   image    String?
-  isActive Boolean @default(true)
+  provider String?
+
+  role   Role   @default(USER)
+  tier   String @default("Silver")
+  points Int    @default(0)
 
   bookings Booking[]
+  reviews  Review[]
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
 }
 
-// Table Booking (Transaksi)
+model Store {
+  id          Int     @id @default(autoincrement())
+  name        String
+  address     String
+  city        String
+  phone       String
+  image       String?
+  description String?
+  mapUrl      String?
+
+  openTime      String
+  closeTime     String
+  lateTolerance Int    @default(15)
+
+  stations     StoreStation[]
+  bookings     Booking[]
+  blockedDates BlockedDate[]
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("stores")
+}
+
+model StoreStation {
+  id       Int         @id @default(autoincrement())
+  type     StationType
+  quantity Int
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@unique([storeId, type])
+  @@map("store_stations")
+}
+
+model BlockedDate {
+  id     Int      @id @default(autoincrement())
+  date   DateTime
+  reason String?
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("blocked_dates")
+}
+
+model Service {
+  id          Int             @id @default(autoincrement())
+  name        String
+  category    ServiceCategory
+  price       Decimal
+  description String?
+  image       String?
+  isActive    Boolean         @default(true)
+
+  duration        Int
+  bufferTime      Int         @default(15)
+  requiredStation StationType @default(LASH_BED)
+
+  bookings Booking[]
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("services")
+}
+
 model Booking {
-  id         String        @id @default(cuid())
-  date       DateTime // Tanggal booking
-  time       String // Jam (misal "14:00")
-  status     BookingStatus @default(PENDING)
-  totalPrice Decimal
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  id          Int    @id @default(autoincrement())
+  invoiceCode String
 
-  // Relasi ke User
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  bookingDate DateTime
+  startTime   DateTime
+  endTime     DateTime
 
-  // Relasi ke Service
+  status BookingStatus @default(PENDING)
+  source BookingSource @default(ONLINE)
+
+  paymentMethod PaymentMethod @default(MIDTRANS)
+  paymentStatus PaymentStatus @default(UNPAID)
+  totalPrice    Decimal
+  snapToken     String?
+
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id])
+
+  walkInName String?
+
   serviceId Int
   service   Service @relation(fields: [serviceId], references: [id])
+
+  storeId Int
+  store   Store @relation(fields: [storeId], references: [id])
+
+  review Review?
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("bookings")
 }
 
-// Table Review (Optional untuk nanti)
 model Review {
-  id      String @id @default(cuid())
-  rating  Int
-  comment String
-  userId  String
-  user    User   @relation(fields: [userId], references: [id])
+  id         Int     @id @default(autoincrement())
+  rating     Int
+  comment    String?
+  isFeatured Boolean @default(false)
+
+  bookingId Int     @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("reviews")
+}
+
+model SeoConfig {
+  id              Int     @id @default(1)
+  pageName        String  @unique @default("home")
+  metaTitle       String
+  metaDescription String
+  keywords        String?
+  ogImage         String?
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("seo_configs")
+}
+
+model SocialMedia {
+  id       Int            @id @default(autoincrement())
+  platform SocialPlatform
+  url      String
+  username String?
+  isActive Boolean        @default(true)
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("social_medias")
+}
+
+model Content {
+  id        Int             @id @default(autoincrement())
+  title     String
+  videoUrl  String
+  platform  ContentPlatform
+  thumbnail String?
+  isActive  Boolean         @default(true)
+  order     Int             @default(0)
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("contents")
+}
+
+model Promo {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  image       String
+  link        String?
+  isActive    Boolean @default(true)
+
+  startDate DateTime?
+  endDate   DateTime?
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("promos")
+}
+
+model Gallery {
+  id       Int             @id @default(autoincrement())
+  imageUrl String
+  category ServiceCategory
+  caption  String?
+
+  createdBy String?  @default("system")
+  createdAt DateTime @default(now())
+  updatedBy String?  @default("system")
+  updatedAt DateTime @updatedAt
+
+  @@map("galleries")
 }
